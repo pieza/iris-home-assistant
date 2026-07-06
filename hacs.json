@@ -1,0 +1,6 @@
+{
+  "name": "IRIS",
+  "render_readme": true,
+  "domains": ["media_player"],
+  "homeassistant": "2025.1.0"
+}

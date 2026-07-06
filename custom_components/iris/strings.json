@@ -1,0 +1,35 @@
+{
+  "config": {
+    "flow_title": "{name}",
+    "step": {
+      "user": {
+        "title": "IRIS TV",
+        "description": "Connect to your IRIS TV bridge.",
+        "data": {
+          "host": "Host",
+          "port": "Port",
+          "name": "Name",
+          "api_token": "API token"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Could not connect to IRIS. Check the host, port, and API token."
+    },
+    "abort": {
+      "already_configured": "This IRIS device is already configured."
+    }
+  },
+  "services": {
+    "send_command": {
+      "name": "Send command",
+      "description": "Send an IRIS remote command.",
+      "fields": {
+        "command": {
+          "name": "Command",
+          "description": "The command name from the active IRIS profile."
+        }
+      }
+    }
+  }
+}

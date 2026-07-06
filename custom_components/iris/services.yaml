@@ -1,0 +1,6 @@
+send_command:
+  fields:
+    command:
+      required: true
+      selector:
+        text:
