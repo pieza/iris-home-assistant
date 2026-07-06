@@ -13,7 +13,7 @@ from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from .api import IrisApiClient
 from .const import CONF_API_TOKEN, DOMAIN, SERVICE_SEND_COMMAND
 
-PLATFORMS = [Platform.MEDIA_PLAYER]
+PLATFORMS = [Platform.MEDIA_PLAYER, Platform.BUTTON]
 SERVICE_SCHEMA = vol.Schema({vol.Required("command"): cv.string})
 
 

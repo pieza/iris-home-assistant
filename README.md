@@ -50,6 +50,7 @@ Copy `custom_components/iris` into your Home Assistant `custom_components` direc
 - `media_player` TV entity.
 - Power on/off via `power_on` / `power_off`, or optimistic `power` toggle when only that command exists.
 - Volume up/down, mute, and input source commands when the active IRIS profile supports them.
+- Button entities for supported remote commands, including channels, menu, navigation, colored keys, Netflix, Prime Video, and YouTube.
 - `iris.send_command` service for extra profile commands such as `up`, `down`, `left`, `right`, `ok`, `back`, `home`, and `menu`.
 
 ## Development
