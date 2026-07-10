@@ -1,8 +1,8 @@
 # IRIS Home Assistant
 
-Custom Home Assistant integration for IRIS TV bridges.
+Custom Home Assistant integration for multi-device IRIS infrared bridges.
 
-IRIS runs on a Raspberry Pi and exposes a local HTTP API plus Zeroconf discovery. This integration discovers IRIS on the LAN and creates a `media_player` TV entity.
+IRIS runs on a Raspberry Pi and exposes a local HTTP API plus Zeroconf discovery. Configure one IRIS hub entry; the integration creates separate Home Assistant devices for every registered IRIS TV and fan.
 
 ## Requirements
 
@@ -13,9 +13,9 @@ IRIS runs on a Raspberry Pi and exposes a local HTTP API plus Zeroconf discovery
 Prepare IRIS on the Raspberry Pi:
 
 ```bash
-iris start telstar
+iris device add living-room-tv telstar/generic --name "Living Room TV"
 iris home-assistant setup
-iris daemon start telstar
+iris daemon start
 ```
 
 Save the `api_token` printed by `iris home-assistant setup`.
@@ -47,11 +47,11 @@ Copy `custom_components/iris` into your Home Assistant `custom_components` direc
 ## Features
 
 - Zeroconf discovery for `_iris-tv._tcp.local.`
-- `media_player` TV entity.
+- Separate `media_player` TV and `fan` entities, attached to their own Home Assistant devices.
 - Power on/off via `power_on` / `power_off`, or optimistic `power` toggle when only that command exists.
 - Volume up/down, mute, and input source commands when the active IRIS profile supports them.
 - Button entities for supported remote commands, including channels, menu, navigation, colored keys, Netflix, Prime Video, and YouTube.
-- `iris.send_command` service for extra profile commands such as `up`, `down`, `left`, `right`, `ok`, `back`, `home`, and `menu`.
+- Targeted `iris.send_command` service for extra profile commands; supply the IRIS `device_id` and command. It never broadcasts a command to every device.
 
 ## Development
 

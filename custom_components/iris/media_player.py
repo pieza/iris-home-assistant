@@ -7,27 +7,20 @@ from homeassistant.components.media_player import (
     MediaPlayerState,
 )
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import CONF_NAME
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .api import IrisApiClient, IrisProfile
-from .const import CONF_DEVICE_ID, DOMAIN
+from .api import IrisApiClient, IrisDevice
+from .const import DOMAIN
 
 
-async def async_setup_entry(
-    hass: HomeAssistant,
-    entry: ConfigEntry,
-    async_add_entities: AddEntitiesCallback,
-) -> None:
+async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback) -> None:
     runtime = hass.data[DOMAIN][entry.entry_id]
     async_add_entities(
         [
-            IrisMediaPlayer(
-                entry,
-                runtime["client"],
-                runtime["profile"],
-            )
+            IrisMediaPlayer(entry, runtime["client"], device, runtime["bridge_id"])
+            for device in runtime["devices"]
+            if device.device_type == "tv"
         ]
     )
 
@@ -37,24 +30,19 @@ class IrisMediaPlayer(MediaPlayerEntity):
     _attr_has_entity_name = True
     _attr_name = None
 
-    def __init__(
-        self,
-        entry: ConfigEntry,
-        client: IrisApiClient,
-        profile: IrisProfile,
-    ) -> None:
-        self._entry = entry
+    def __init__(self, entry: ConfigEntry, client: IrisApiClient, device: IrisDevice, bridge_id: str) -> None:
         self._client = client
-        self._profile = profile
-        self._commands = set(profile.commands)
-        self._attr_unique_id = str(entry.data.get(CONF_DEVICE_ID) or profile.id)
+        self._device = device
+        self._commands = set(device.commands)
+        self._attr_unique_id = f"{bridge_id}:{device.id}"
         self._attr_state = MediaPlayerState.OFF
         self._attr_supported_features = self._supported_features()
         self._attr_device_info = {
             "identifiers": {(DOMAIN, self._attr_unique_id)},
-            "manufacturer": profile.brand.title(),
-            "model": profile.model,
-            "name": entry.data.get(CONF_NAME) or f"IRIS {profile.brand.title()} TV",
+            "manufacturer": device.brand.title(),
+            "model": device.model,
+            "name": device.name,
+            "via_device": (DOMAIN, bridge_id),
         }
 
     def _supported_features(self) -> MediaPlayerEntityFeature:
@@ -91,11 +79,11 @@ class IrisMediaPlayer(MediaPlayerEntity):
     async def _send_first_available(self, commands: tuple[str, ...]) -> None:
         for command in commands:
             if command in self._commands:
-                await self._client.async_send_command(command)
+                await self._client.async_send_command(self._device.id, command)
                 self.async_write_ha_state()
                 return
 
     async def _send_if_available(self, command: str) -> None:
         if command in self._commands:
-            await self._client.async_send_command(command)
+            await self._client.async_send_command(self._device.id, command)
             self.async_write_ha_state()

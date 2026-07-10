@@ -5,10 +5,10 @@
   "codeowners": [],
   "config_flow": true,
   "documentation": "https://github.com/pieza/iris-tv",
-  "integration_type": "device",
+  "integration_type": "hub",
   "iot_class": "local_push",
   "requirements": [],
-  "version": "1.1.0",
+  "version": "1.2.0",
   "zeroconf": [
     {
       "type": "_iris-tv._tcp.local."

@@ -1,5 +1,9 @@
 send_command:
   fields:
+    device_id:
+      required: true
+      selector:
+        text:
     command:
       required: true
       selector:

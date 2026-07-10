@@ -44,32 +44,39 @@ class FakeSession:
 
 
 class IrisApiClientTests(unittest.TestCase):
-    def test_get_profile_uses_bearer_token_and_parses_commands(self):
+    def test_get_devices_uses_bearer_token_and_parses_device_metadata(self):
         async def run():
             session = FakeSession(
                 FakeResponse(
                     200,
                     {
-                        "id": "telstar/generic",
-                        "brand": "telstar",
-                        "model": "generic",
-                        "device_type": "tv",
-                        "commands": ["power", "volume_up"],
+                        "devices": [{
+                            "id": "bedroom_fan",
+                            "name": "Bedroom Fan",
+                            "profile": "generic/fan",
+                            "brand": "generic",
+                            "model": "fan",
+                            "device_type": "fan",
+                            "commands": ["power", "speed_low"],
+                            "home_assistant": {"fan": {"presets": {"low": "speed_low"}}},
+                        }],
                     },
                 )
             )
             client = IrisApiClient(session, "192.168.1.10", 8787, "secret")
 
-            profile = await client.async_get_profile()
+            devices = await client.async_get_devices()
+            device = devices[0]
 
-            self.assertEqual(profile.id, "telstar/generic")
-            self.assertEqual(profile.commands, ("power", "volume_up"))
+            self.assertEqual(device.id, "bedroom_fan")
+            self.assertEqual(device.commands, ("power", "speed_low"))
+            self.assertEqual(device.fan.presets, {"low": "speed_low"})
             self.assertEqual(
                 session.calls,
                 [
                     (
                         "GET",
-                        "http://192.168.1.10:8787/profile",
+                        "http://192.168.1.10:8787/devices",
                         {"Authorization": "Bearer secret"},
                     )
                 ],
@@ -83,7 +90,7 @@ class IrisApiClientTests(unittest.TestCase):
             client = IrisApiClient(session, "192.168.1.10", 8787, "bad")
 
             with self.assertRaises(IrisAuthError):
-                await client.async_get_profile()
+                await client.async_get_devices()
 
         asyncio.run(run())
 

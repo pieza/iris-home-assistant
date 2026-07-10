@@ -20,7 +20,7 @@ from .const import (
 
 
 class IrisConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
-    VERSION = 1
+    VERSION = 2
 
     def __init__(self) -> None:
         self._discovery: dict[str, Any] = {}
@@ -56,16 +56,16 @@ class IrisConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         if user_input is not None:
             data = {**self._discovery, **user_input}
             try:
-                profile = await self._validate_input(data)
+                bridge_id = await self._validate_input(data)
             except IrisApiError:
                 errors["base"] = "cannot_connect"
             else:
-                device_id = str(data.get(CONF_DEVICE_ID) or profile.id)
+                device_id = str(data.get(CONF_DEVICE_ID) or bridge_id)
                 await self.async_set_unique_id(device_id)
                 self._abort_if_unique_id_configured()
                 data[CONF_DEVICE_ID] = device_id
                 return self.async_create_entry(
-                    title=str(data.get(CONF_NAME) or f"IRIS {profile.brand} TV"),
+                    title=str(data.get(CONF_NAME) or "IRIS Hub"),
                     data=data,
                 )
 
@@ -91,4 +91,13 @@ class IrisConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             int(data[CONF_PORT]),
             token or None,
         )
-        return await client.async_get_profile()
+        health = await client.async_get_health()
+        await client.async_get_devices()
+        return str(health.get("bridge_id") or health.get("device_id") or data[CONF_HOST])
+
+
+async def async_migrate_entry(hass, config_entry) -> bool:
+    """Keep existing single-device entries as the IRIS hub entry."""
+    if config_entry.version < 2:
+        hass.config_entries.async_update_entry(config_entry, version=2)
+    return True
