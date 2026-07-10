@@ -9,7 +9,7 @@ from homeassistant.const import CONF_HOST, CONF_NAME, CONF_PORT
 from homeassistant.data_entry_flow import FlowResult
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
-from .api import IrisApiClient, IrisApiError
+from .api import IrisApiClient, IrisApiError, IrisAuthError
 from .const import (
     CONF_API_TOKEN,
     CONF_DEVICE_ID,
@@ -57,6 +57,8 @@ class IrisConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             data = {**self._discovery, **user_input}
             try:
                 bridge_id = await self._validate_input(data)
+            except IrisAuthError:
+                errors["base"] = "invalid_auth"
             except IrisApiError:
                 errors["base"] = "cannot_connect"
             else:
@@ -65,7 +67,7 @@ class IrisConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 self._abort_if_unique_id_configured()
                 data[CONF_DEVICE_ID] = device_id
                 return self.async_create_entry(
-                    title=str(data.get(CONF_NAME) or "IRIS Hub"),
+                    title=str(data.get(CONF_NAME) or DEFAULT_NAME),
                     data=data,
                 )
 

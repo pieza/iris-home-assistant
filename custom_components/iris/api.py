@@ -12,6 +12,10 @@ class IrisAuthError(IrisApiError):
     """Raised when IRIS rejects the configured token."""
 
 
+class IrisConnectionError(IrisApiError):
+    """Raised when the IRIS bridge cannot be reached."""
+
+
 @dataclass(frozen=True)
 class IrisFanControls:
     power_on: str | None
@@ -75,10 +79,15 @@ class IrisApiClient:
         headers = {}
         if auth and self._token:
             headers["Authorization"] = f"Bearer {self._token}"
-        async with self._session.request(method, f"{self._base_url}{path}", headers=headers) as response:
-            if response.status == 401:
-                raise IrisAuthError("invalid IRIS API token")
-            if response.status >= 400:
-                text = await response.text()
-                raise IrisApiError(f"IRIS API returned {response.status}: {text}")
-            return await response.json()
+        try:
+            async with self._session.request(
+                method, f"{self._base_url}{path}", headers=headers
+            ) as response:
+                if response.status == 401:
+                    raise IrisAuthError("invalid IRIS API token")
+                if response.status >= 400:
+                    text = await response.text()
+                    raise IrisApiError(f"IRIS API returned {response.status}: {text}")
+                return await response.json()
+        except (OSError, TimeoutError) as err:
+            raise IrisConnectionError("could not reach IRIS bridge") from err

@@ -3,8 +3,8 @@
     "flow_title": "{name}",
     "step": {
       "user": {
-        "title": "IRIS TV",
-        "description": "Connect to your IRIS TV bridge.",
+        "title": "IRIS",
+        "description": "Connect to your IRIS bridge.",
         "data": {
           "host": "Host",
           "port": "Port",
@@ -14,10 +14,11 @@
       }
     },
     "error": {
-      "cannot_connect": "Could not connect to IRIS. Check the host, port, and API token."
+      "cannot_connect": "Could not connect to IRIS. Check the host, port, and network connection.",
+      "invalid_auth": "The API token is invalid. Run `iris home-assistant setup` and enter the token it prints."
     },
     "abort": {
-      "already_configured": "This IRIS device is already configured."
+      "already_configured": "This IRIS bridge is already configured."
     }
   },
   "services": {
@@ -27,7 +28,7 @@
       "fields": {
         "command": {
           "name": "Command",
-          "description": "The command name from the active IRIS profile."
+          "description": "The command name from the device profile."
         }
       }
     }

@@ -13,6 +13,7 @@ SPEC.loader.exec_module(api)
 
 IrisApiClient = api.IrisApiClient
 IrisAuthError = api.IrisAuthError
+IrisConnectionError = api.IrisConnectionError
 
 
 class FakeResponse:
@@ -41,6 +42,11 @@ class FakeSession:
     def request(self, method, url, headers):
         self.calls.append((method, url, headers))
         return self.response
+
+
+class FailingSession:
+    def request(self, method, url, headers):
+        raise OSError("network unreachable")
 
 
 class IrisApiClientTests(unittest.TestCase):
@@ -91,6 +97,15 @@ class IrisApiClientTests(unittest.TestCase):
 
             with self.assertRaises(IrisAuthError):
                 await client.async_get_devices()
+
+        asyncio.run(run())
+
+    def test_network_failure_raises_connection_error(self):
+        async def run():
+            client = IrisApiClient(FailingSession(), "192.168.1.10", 8787, "secret")
+
+            with self.assertRaises(IrisConnectionError):
+                await client.async_get_health()
 
         asyncio.run(run())
 

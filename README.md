@@ -8,7 +8,7 @@ IRIS runs on a Raspberry Pi and exposes a local HTTP API plus Zeroconf discovery
 
 - Home Assistant with HACS installed.
 - IRIS running on the Raspberry Pi with Home Assistant setup enabled.
-- IRIS Rust app version compatible with API version `1`.
+- IRIS Rust app version compatible with API version `2`.
 
 Prepare IRIS on the Raspberry Pi:
 
@@ -39,6 +39,8 @@ Save the `api_token` printed by `iris home-assistant setup`.
 After restart, Home Assistant should show IRIS as a discovered device. Accept it and enter the API token from the Raspberry Pi.
 
 If discovery does not appear, go to **Settings > Devices & services > Add integration**, search for **IRIS**, then enter the Raspberry Pi IP address, port `8787`, and API token manually.
+
+If you removed IRIS and are adding it again, run `iris home-assistant setup` on the Raspberry Pi and use the token it prints. A token error is shown separately from a network connection error.
 
 ## Manual Install
 

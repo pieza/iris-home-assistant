@@ -6,7 +6,7 @@ CONF_HOST = "host"
 CONF_NAME = "name"
 CONF_PORT = "port"
 
-DEFAULT_NAME = "IRIS Hub"
+DEFAULT_NAME = "IRIS"
 DEFAULT_PORT = 8787
 SERVICE_SEND_COMMAND = "send_command"
 IRIS_SERVICE_TYPE = "_iris-tv._tcp.local."

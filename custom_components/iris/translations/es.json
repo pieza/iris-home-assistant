@@ -1,0 +1,36 @@
+{
+  "config": {
+    "flow_title": "{name}",
+    "step": {
+      "user": {
+        "title": "IRIS",
+        "description": "Conecta tu bridge IRIS.",
+        "data": {
+          "host": "Host",
+          "port": "Puerto",
+          "name": "Nombre",
+          "api_token": "Token de API"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "No se pudo conectar a IRIS. Revisa host, puerto y conexión de red.",
+      "invalid_auth": "El token de API no es válido. Ejecuta `iris home-assistant setup` e introduce el token que muestra."
+    },
+    "abort": {
+      "already_configured": "Este bridge IRIS ya está configurado."
+    }
+  },
+  "services": {
+    "send_command": {
+      "name": "Enviar comando",
+      "description": "Envía un comando de control remoto mediante IRIS.",
+      "fields": {
+        "command": {
+          "name": "Comando",
+          "description": "El nombre del comando del perfil del dispositivo."
+        }
+      }
+    }
+  }
+}
