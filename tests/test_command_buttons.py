@@ -33,6 +33,11 @@ class CommandButtonTests(unittest.TestCase):
         self.assertIn("prime_video", commands)
         self.assertIn("youtube", commands)
 
+    def test_fan_commands_are_exposed_as_buttons(self):
+        commands = {button.command for button in command_buttons.FAN_BUTTONS}
+
+        self.assertEqual(commands, {"mute", "speed"})
+
 
 if __name__ == "__main__":
     unittest.main()

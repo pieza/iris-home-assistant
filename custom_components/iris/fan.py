@@ -36,6 +36,9 @@ class IrisFan(FanEntity):
         if self._fan and self._fan.presets:
             features |= FanEntityFeature.PRESET_MODE
             self._attr_preset_modes = list(self._fan.presets)
+        if self._fan and self._fan.oscillate:
+            features |= FanEntityFeature.OSCILLATE
+            self._attr_oscillating = False
         self._attr_supported_features = features
         self._attr_device_info = {
             "identifiers": {(DOMAIN, self._attr_unique_id)},
@@ -66,6 +69,18 @@ class IrisFan(FanEntity):
         await self._client.async_send_command(self._device.id, self._fan.presets[preset_mode])
         self._attr_preset_mode = preset_mode
         self._attr_is_on = True
+        self.async_write_ha_state()
+
+    async def async_oscillate(self, oscillating: bool) -> None:
+        if (
+            not self._fan
+            or not self._fan.oscillate
+            or self._fan.oscillate not in self._device.commands
+            or oscillating == self._attr_oscillating
+        ):
+            return
+        await self._client.async_send_command(self._device.id, self._fan.oscillate)
+        self._attr_oscillating = oscillating
         self.async_write_ha_state()
 
     async def _send_first_available(self, *commands: str | None) -> None:

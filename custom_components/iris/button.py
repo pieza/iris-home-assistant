@@ -6,7 +6,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .api import IrisApiClient, IrisDevice
-from .command_buttons import REMOTE_BUTTONS, RemoteButtonDescription
+from .command_buttons import FAN_BUTTONS, REMOTE_BUTTONS, RemoteButtonDescription
 from .const import DOMAIN
 
 
@@ -16,10 +16,18 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
         [
             IrisCommandButton(runtime["client"], device, runtime["bridge_id"], description)
             for device in runtime["devices"]
-            for description in REMOTE_BUTTONS
+            for description in _button_descriptions(device)
             if description.command in device.commands
         ]
     )
+
+
+def _button_descriptions(device: IrisDevice) -> tuple[RemoteButtonDescription, ...]:
+    if device.device_type == "tv":
+        return REMOTE_BUTTONS
+    if device.device_type == "fan":
+        return FAN_BUTTONS
+    return ()
 
 
 class IrisCommandButton(ButtonEntity):

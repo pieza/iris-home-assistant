@@ -33,3 +33,8 @@ REMOTE_BUTTONS = (
     RemoteButtonDescription("info", "Info"),
     RemoteButtonDescription("list", "List"),
 )
+
+FAN_BUTTONS = (
+    RemoteButtonDescription("mute", "Mute"),
+    RemoteButtonDescription("speed", "Speed"),
+)
