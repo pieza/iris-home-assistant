@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Any
+
 from homeassistant.components.fan import FanEntity, FanEntityFeature
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
@@ -43,7 +45,12 @@ class IrisFan(FanEntity):
             "via_device": (DOMAIN, bridge_id),
         }
 
-    async def async_turn_on(self, **kwargs) -> None:
+    async def async_turn_on(
+        self,
+        percentage: int | None = None,
+        preset_mode: str | None = None,
+        **kwargs: Any,
+    ) -> None:
         await self._send_first_available(self._fan.power_on if self._fan else None, "power_on", "power")
         self._attr_is_on = True
         self.async_write_ha_state()
